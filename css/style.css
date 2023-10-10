@@ -82,13 +82,13 @@ header a:hover{
 }
 
 #showcase{
-  background-image: url(../img/build.jpg);
-  background-position:center ;
-  background-repeat: no-repeat;
-  background-size: auto 100%;
+  background-image:url(../img/build.jpg);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:auto 100%;
   background-color:grey;
   text-align:center;
-  color: #ffffff;
+  color:#ffffff;
 }
 
 #showcase h1{
@@ -203,7 +203,7 @@ footer{
 }
 
 .achievements{
-  color: black;
+  color: red;
   text-align:center;
   }
   
