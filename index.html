@@ -1,70 +1,242 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
-  <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>BrestBuild | Welcome</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="icon" href="img/minecraft.ico">
-  </head>
-  <body>
-    <header>
-      <div class="container">
-        <div id="branding">
-          <h1><span class="highlight">НЕДВИЖИМОСТЬ </span>ВАШЕ БУДУЩЕЕ</h1>
+    <head>
+    </head>
+    <body>
+        <div id="div1">
+          <canvas id="canvas1" width="256" height="256" style="border:1px solid #000000;"></canvas>
+          <div>
+            <input id="input1" type="file" value="Выбрать изображение">
+            <input  id="input2" type="text" value="0.1">
+            <button id="button1">Посмотреть изображение</button>
+            <button id="button2">Ввести импульсное зашумление</button>
+            <button id="button3">Сделать фильтрацию изображения</button>
+            <button id="button4">Сохранить в собственном формате</button>
+            <button id="button5">Сохранить в обычном формате</button>
+          </div>
         </div>
-        <nav>
-          <ul>
-            <li class="current"><a href="index.html">Главная</a></li>
-            <li><a href="about.html">О нас</a></li>
-            <li><a href="services.html">Услуги</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+        <script type="text/javascript">
+//Функция, которая показывает загруженное изображение
+function loadImage(){
+  getPixels().then(function(pixelsInfo){
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+  getByteFile().then(function(byteFile){
+  });
+}
 
-    <section id="showcase">
-      <div class="container">
-        <h1>Кто не работает, тот не ест!</h1>
-        <p>В сердцах трудовых народов живет непреодолимое стремление к соединению своих сил.</p>
-      </div>
-    </section>
+//Функция, которая показывает зашумленное изображение
+function showNoisyImage(){
+  getPixels().then(function(pixelsInfo){
+    var threshold = document.getElementById("input2").value;
+    for(var i=0;i<pixelsInfo.pixelArray.length;i+=3)if(Math.random()<threshold){
+      pixelsInfo.pixelArray[i] = Math.floor(Math.random()*256);
+      pixelsInfo.pixelArray[i+1] = Math.floor(Math.random()*256);
+      pixelsInfo.pixelArray[i+2] = Math.floor(Math.random()*256);
+    }
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+}
 
-    <section id="letter">
-      <div class="container">
-        <h1>Подпишись на нашу рассылку</h1>
-        <form>
-          <input type="email" placeholder="Введите адрес..." required>
-          <button type="submit" class="button_1">Присоединиться</button>
-        </form>
-      </div>
-    </section>
-    <section>
-        <div class="achievements">
-          <h2>НАШИ ДОСТИЖЕНИЯ:</h2>
-        </div>
-    </section>
-    <section id="boxes">
-      <div class="container">
-        <div class="box">
-          <img src="./img/reward1.png">
-          <h3>Лучшее архитектурное решение</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus mi augue, viverra sit amet ultricies</p>
-        </div>
-        <div class="box">
-          <img src="./img/reward2.png">
-          <h3>Божественная кладка</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus mi augue, viverra sit amet ultricies</p>
-        </div>
-        <div class="box">
-          <img src="./img/reward3.png">
-          <h3>Самые ровные стены</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus mi augue, viverra sit amet ultricies</p>
-        </div>
-      </div>
-    </section>
+//Функция, которая сохраняет изображение в обычном формате
+function saveCanvasImageNormal(){
+  getByteFile().then(function(byteFile){
+    saveImage(byteFile,"canvas1",54);
+  });
+}
 
-    <footer>
-      <p>Факультет Электронно-Информационных Систем группа АС-61 Седко Максим Викторович 2023</p>
-    </footer>
-  </body>
+//Функция, которая сохраняет изображение в моём формате
+function saveCanvasImageSpecial(){
+  getByteFile().then(function(byteFile){
+
+     var newByteFile = new Uint8ClampedArray(byteFile.length-(54-51));
+    //идентификатор типа файла (2 байта)
+    newByteFile[0] = 0; newByteFile[1] = 1;
+    //глубина цвета (количество бит на один пиксель) (1 байт)
+    newByteFile[0] = 24;
+    //автор формата (20 байт)
+    var output = "Седко Максим";
+    for(var i=3;i<11;i++)newByteFile[i] = 0;
+    for(var i=11;i<23;i++)newByteFile[i] = output.charCodeAt(i);
+    //высота изображения в пикселях (4 байта)
+    for(var i=23;i<27;i++)newByteFile[i] =byteFile[i];
+    //размер изображения в пикселях (4 байта)
+    for(var i=27;i<31;i++)newByteFile[i] =byteFile[i+8];
+    //размер заголовка в байтах (2 байта)
+    newByteFile[31] = 0; newByteFile[32] = 51;
+    //смещение растровых данных от начала файла в байтах (2 байта)
+    //комментарий (16 байт)
+    //итого заголовок - 51 байт
+     console.log(newByteFile.length);
+    saveImage(byteFile,"canvas1",51);
+  });
+}
+
+//Функция нахождения коеффициента
+function findKoef(pixel,red,green,blue){
+  return 1/3*Math.abs(pixel.red-red)+1/3*Math.abs(pixel.green-green)+1/3*Math.abs(pixel.blue-blue);
+}
+
+//Функция, которая показывает зашумленное изображение
+function showFilteredImage(){
+  getPixels().then(function(pixelsInfo){
+    var width = pixelsInfo.pixelsWidth;
+    var height = pixelsInfo.pixelsHeight;
+    var array = pixelsInfo.pixelArray;
+    var tmpPixels = new Array(width*height);
+    for(var i=0;i<tmpPixels.length;i++)tmpPixels[i] = {red:array[i*3],green:array[i*3+1],blue:array[i*3+2]};
+    for(var j=2;j<height-2;j++){
+      for(var i=2;i<width-2;i++){
+        var red = 0;
+        var green = 0;
+        var blue = 0;
+        var ids = [((j-2)*width+(i-2)),((j-2)*width+(i-1)),((j-2)*width+(i)),((j-2)*width+(i+1)),((j-2)*width+(i+2)),
+      ((j-1)*width+(i-2)),((j-1)*width+(i-1)),((j-1)*width+(i)),((j-1)*width+(i+1)),((j-1)*width+(i+2)),
+      ((j)*width+(i-2)),((j)*width+(i-1)),((j)*width+(i)),((j)*width+(i+1)),((j)*width+(i+2)),
+      ((j+1)*width+(i-2)),((j+1)*width+(i-1)),((j+1)*width+(i)),((j+1)*width+(i+1)),((j+1)*width+(i+2)),
+      ((j+2)*width+(i-2)),((j+2)*width+(i-1)),((j+2)*width+(i)),((j+2)*width+(i+1)),((j+2)*width+(i+2))];
+        for(var g=0;g<ids.length;g++) red+=tmpPixels[ids[g]].red;
+        for(var g=0;g<ids.length;g++) green+=tmpPixels[ids[g]].green;
+        for(var g=0;g<ids.length;g++) blue+=tmpPixels[ids[g]].blue;
+        red = red/25;
+        green = green/25;
+        blue = blue/25;
+        var answer = {koef:findKoef(tmpPixels[ids[0]],red,green,blue),id:ids[0]};
+        for(var g=1;g<ids.length;g++){
+          var tmp = findKoef(tmpPixels[ids[g]],red,green,blue);
+          if(tmp<answer.koef){
+            answer.koef=tmp;
+            answer.id = ids[g];
+          }
+        }
+        tmpPixels[j*width+i] = tmpPixels[answer.id];
+      }
+    }
+    for(var i=0;i<tmpPixels.length;i++){
+      pixelsInfo.pixelArray[i*3] = tmpPixels[i].red;
+      pixelsInfo.pixelArray[i*3+1] = tmpPixels[i].green;
+      pixelsInfo.pixelArray[i*3+2] = tmpPixels[i].blue;
+    }
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+}
+
+
+//Функция, которая сохраняет выбранное изображение с новым набором пикселей не трогая заголовок
+function saveImage(byteFile,canvasId,headSize){
+  var canvas = document.getElementById(canvasId);
+  var outputBuffer = new Uint8ClampedArray(byteFile.length);
+  for(var i=0;i<byteFile.length;i++) outputBuffer[i]=byteFile[i];
+  var imageData = canvas.getContext("2d").getImageData(0,0,canvas.width,canvas.height);
+  var pixelArray = imageData.data;
+  var pixelsWidth = canvas.width;
+  var pixelsHeight = canvas.height;
+  var iterator = 0;
+  var stroka = pixelsHeight-1;
+  for(var i=0;i<pixelArray.length;i+=4){
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i+2];
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i+1];
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i];
+    if(iterator==pixelsWidth*3){iterator=0;stroka--;}
+  }
+  var a = document.createElement("a");
+  var file = new Blob([outputBuffer], {type: 'image/bmp'});
+  a.href = URL.createObjectURL(file);
+  a.download = "example.bmp";
+  a.click();
+}
+
+
+//Функци, которая создаёт промис на получение файла в виде массива байтов
+let getByteFile = function(){
+  return new Promise(function(resolve){
+var file = document.querySelector("#input1").files[0];
+file.arrayBuffer().then((arrayBuffer)=>{resolve(new Uint8ClampedArray(arrayBuffer));});
+});
+}
+
+//Функция, которая создаёт промис на получение массива цветовых пикселей и данных о ширине и высоте картинки 
+let getPixels = function(){
+  return new Promise(function(resolve){
+  getByteFile().then(function(byteFile){
+    var pixelsWidth = parseInt(getByteInfo(byteFile,BMPImageInfo.rasterWidth,10));
+    var pixelsHeight = parseInt(getByteInfo(byteFile,BMPImageInfo.rasterHeight,10));
+    var pixelArray = new Uint8ClampedArray(pixelsWidth*pixelsHeight*3);
+    var iterator = 0;
+    var stroka = pixelsHeight-1;
+    for(var i=0;i<pixelArray.length;i+=3){
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+54];
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+54+1];
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+54+2];
+      if(iterator==pixelsWidth*3){iterator=0;stroka--;}
+    }
+    resolve({pixelArray,pixelsWidth,pixelsHeight});
+  });
+});
+}
+
+//Структура хранящая пояснение к байтовым последовательностям файла
+let BMPImageInfo = {
+  //BITMAPFILEHEADER
+  endianType: ["Порядок байтов",1,2],
+  fileSize: ["Размер файла",3,6],
+  reservedBytes: ["Зарезервированные байты",7,10],
+  pixelDataPos: ["Положение пиксельных данных",11,14],
+  //BITMAPINFO
+  bitmapinfoSize: ["Размер BITMAPINFO",15,18],
+  rasterWidth: ["Ширина растра",19,22],
+  rasterHeight: ["Высота растра и порядок строк",23,26],
+  justOne: ["Тут 1",27,28],
+  pixelSize: ["Кол-во бит на пиксель",29,30],
+  pixelStoreMethod: ["Способ хранения пикселей",31,34],
+  pixelDataSize: ["Размер пиксельных данных",35,38],
+  pixelMeterHorizontal: ["Кол-во пикселей на метр по горизонтали",39,42],
+  pixelMeterVertical: ["Кол-во пикселей на метр по вертикали",43,46],
+  colorTableSize: ["Размер таблицы цветов в ячейках",47,50],
+  colorTableCellNum: ["Кол-во используемых ячеек таблицы",51,54]
+}
+
+//Функция для получения представления нескольких байтов из файла
+function getByteInfo(array, BMPInfo, intSystem){
+  var output = "";
+  for(var i = BMPInfo[2]-1; i>BMPInfo[1]-2;i--) output += array[i].toString(2).padStart(8, '0');
+  output = parseInt(output,2).toString(intSystem);
+  return output;
+}
+
+
+//Заполнить canvas пикселями
+function fillCanvas(pixelArray,pixelsWidth,pixelsHeight,canvasId) {
+  var canvas = document.getElementById(canvasId);
+  var tmpPixelArray = new Uint8ClampedArray(pixelsWidth*pixelsHeight*4);
+  var iterator = 0;
+  for(var i=0;i<pixelArray.length;i+=3){
+    tmpPixelArray[iterator++]=pixelArray[i+2];
+    tmpPixelArray[iterator++]=pixelArray[i+1];
+    tmpPixelArray[iterator++]=pixelArray[i];
+    tmpPixelArray[iterator++]=255;
+  }
+  var imageData = new ImageData(tmpPixelArray,pixelsWidth,pixelsHeight);
+  canvas.height = pixelsHeight.toString();
+  canvas.width = pixelsWidth.toString();
+  var ctx = canvas.getContext("2d");
+  ctx.putImageData(imageData,0,0);
+}
+
+let but1 = document.querySelector("#button1");
+but1.onclick = loadImage;
+
+let but2 = document.querySelector("#button2");
+but2.onclick = showNoisyImage;
+
+let but3 = document.querySelector("#button3");
+but3.onclick = showFilteredImage;
+
+let but4 = document.querySelector("#button4");
+but4.onclick = saveCanvasImageSpecial;
+
+let but5 = document.querySelector("#button5");
+but5.onclick = saveCanvasImageNormal;
+        </script>
+    </body>
 </html>
