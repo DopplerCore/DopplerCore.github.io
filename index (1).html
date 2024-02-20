@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="div1">
+          <canvas id="canvas1" width="256" height="256" style="border:1px solid #000000;"></canvas>
+          <div>
+            <input id="input1" type="file" value="Выбрать изображение">
+            <input  id="input3" type="text" value="54">
+            <button id="button1">Посмотреть изображение</button>
+          </div>
+          <div>
+            <input  id="input2" type="text" value="0.1">
+            <button id="button2">Ввести импульсное зашумление</button>
+          </div>
+          <div>
+            <button id="button3">Сделать фильтрацию изображения</button>
+          </div>
+          <div>
+            <button id="button4">Сохранить в собственном формате</button>
+            <button id="button5">Сохранить в обычном формате</button>
+          </div>
+        </div>
+        <script type="text/javascript">
+//Функция, которая показывает загруженное изображение
+function loadImage(){
+var headerSize = parseInt(document.getElementById("input3").value);
+  getPixels(headerSize).then(function(pixelsInfo){
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+  getByteFile().then(function(byteFile){
+  if(headerSize==54){
+  for(key in BMPImageInfo) console.log(BMPImageInfo[key][0] +" - "+ getByteInfo(byteFile,BMPImageInfo[key],10));
+  }
+  else{
+  for(key in BMPMyImageInfo) console.log(BMPMyImageInfo[key][0] +" - "+ getByteInfo(byteFile,BMPMyImageInfo[key],10));
+  }
+  });
+}
+
+//Функция, которая показывает зашумленное изображение
+function showNoisyImage(){
+var headerSize = parseInt(document.getElementById("input3").value);
+  getPixels(headerSize).then(function(pixelsInfo){
+    var threshold = document.getElementById("input2").value;
+    for(var i=0;i<pixelsInfo.pixelArray.length;i+=3)if(Math.random()<threshold){
+      pixelsInfo.pixelArray[i] = Math.floor(Math.random()*256);
+      pixelsInfo.pixelArray[i+1] = Math.floor(Math.random()*256);
+      pixelsInfo.pixelArray[i+2] = Math.floor(Math.random()*256);
+    }
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+}
+
+//Функция, которая сохраняет изображение в обычном формате
+function saveCanvasImageNormal(){
+  getByteFile().then(function(byteFile){
+    saveImage(byteFile,"canvas1",54);
+  });
+}
+
+//Функция, которая сохраняет изображение в моём формате
+function saveCanvasImageSpecial(){
+  getByteFile().then(function(byteFile){
+     var newByteFile = new Uint8ClampedArray(byteFile.length-(54-21));
+     var iterator=0;
+    //идентификатор типа файла (2 байта)
+    newByteFile[iterator++] = 1; newByteFile[iterator++] = 0;
+    //ширина изображения в пикселях (4 байта)
+    for(var i=BMPImageInfo.rasterWidth[1]-1;i<BMPImageInfo.rasterWidth[2];i++)newByteFile[iterator++]=byteFile[i];
+    //высота изображения в пикселях (4 байта)
+    for(var i=BMPImageInfo.rasterHeight[1]-1;i<BMPImageInfo.rasterHeight[2];i++)newByteFile[iterator++]=byteFile[i];
+    //глубина цвета (количество бит на один пиксель) (1 байт)
+    newByteFile[iterator++] = 24;
+    //размер заголовка в байтах (2 байта)
+    newByteFile[iterator++] = 21;
+    newByteFile[iterator++] = 0;
+    //размер файла в байтах (4 байта)
+    for(var i=BMPImageInfo.fileSize[1]-1;i<BMPImageInfo.fileSize[2];i++)newByteFile[iterator++]=byteFile[i];
+    //количество различных цветов на изображении (4 байта)
+    newByteFile[iterator++]=0;
+    newByteFile[iterator++]=0;
+    newByteFile[iterator++]=0;
+    newByteFile[iterator++]=0;
+    //итого заголовок - 21 байт
+    saveImage(newByteFile,"canvas1",21);
+  });
+}
+
+//Функция, которая показывает зашумленное изображение
+function showFilteredImage(){
+var headerSize = parseInt(document.getElementById("input3").value);
+  getPixels(headerSize).then(function(pixelsInfo){
+    var width = pixelsInfo.pixelsWidth;
+    var height = pixelsInfo.pixelsHeight;
+    var array = pixelsInfo.pixelArray;
+    var tmpPixels = new Array(width*height);
+    for(var i=0;i<tmpPixels.length;i++)tmpPixels[i] = {red:array[i*3],green:array[i*3+1],blue:array[i*3+2]};
+    for(var j=1;j<height-1;j++){
+      for(var i=0;i<width;i++){
+        var red = [];
+        var green = [];
+        var blue = [];
+        var ids = [((j-1)*width+(i)),
+      ((j)*width+(i)),
+      ((j+1)*width+(i))];
+        var koefs = [2,3,2];
+        var red2 =[];
+        var green2 =[];
+        var blue2 =[];
+        for(var g=0;g<ids.length;g++) red.push(tmpPixels[ids[g]].red);
+        for(var g=0;g<ids.length;g++) green.push(tmpPixels[ids[g]].green);
+        for(var g=0;g<ids.length;g++) blue.push(tmpPixels[ids[g]].blue);
+        red = red.sort();
+        green = green.sort();
+        blue = blue.sort();
+        tmpPixels[j*width+i].red = red[1];
+        tmpPixels[j*width+i].green = green[1];
+        tmpPixels[j*width+i].blue = blue[1];
+      }
+    }
+    for(var i=0;i<tmpPixels.length;i++){
+      pixelsInfo.pixelArray[i*3] = tmpPixels[i].red;
+      pixelsInfo.pixelArray[i*3+1] = tmpPixels[i].green;
+      pixelsInfo.pixelArray[i*3+2] = tmpPixels[i].blue;
+    }
+    fillCanvas(pixelsInfo.pixelArray,pixelsInfo.pixelsWidth,pixelsInfo.pixelsHeight,"canvas1");
+  });
+}
+
+
+//Функция, которая сохраняет выбранное изображение с новым набором пикселей не трогая заголовок
+function saveImage(byteFile,canvasId,headSize){
+  var canvas = document.getElementById(canvasId);
+  var outputBuffer = new Uint8ClampedArray(byteFile.length);
+  for(var i=0;i<byteFile.length;i++) outputBuffer[i]=byteFile[i];
+  var imageData = canvas.getContext("2d").getImageData(0,0,canvas.width,canvas.height);
+  var pixelArray = imageData.data;
+  var pixelsWidth = canvas.width;
+  var pixelsHeight = canvas.height;
+  var iterator = 0;
+  var stroka = pixelsHeight-1;
+  for(var i=0;i<pixelArray.length;i+=4){
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i+2];
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i+1];
+    outputBuffer[headSize+stroka*pixelsWidth*3+iterator++]=pixelArray[i];
+    if(iterator==pixelsWidth*3){iterator=0;stroka--;}
+  }
+  var a = document.createElement("a");
+  var file = new Blob([outputBuffer], {type: 'image/bmp'});
+  a.href = URL.createObjectURL(file);
+  a.download = "examplfff.SMV";
+  a.click();
+}
+
+
+//Функци, которая создаёт промис на получение файла в виде массива байтов
+let getByteFile = function(){
+  return new Promise(function(resolve){
+var file = document.querySelector("#input1").files[0];
+file.arrayBuffer().then((arrayBuffer)=>{resolve(new Uint8ClampedArray(arrayBuffer));});
+});
+}
+
+//Функция, которая создаёт промис на получение массива цветовых пикселей и данных о ширине и высоте картинки 
+let getPixels = function(headerSize){
+  return new Promise(function(resolve){
+  getByteFile().then(function(byteFile){
+  var pixelsWidth = 0;
+  var pixelsHeight = 0;
+  if(headerSize==54){
+    pixelsWidth = parseInt(getByteInfo(byteFile,BMPImageInfo.rasterWidth,10));
+    pixelsHeight = parseInt(getByteInfo(byteFile,BMPImageInfo.rasterHeight,10));
+  } else {
+    pixelsWidth = parseInt(getByteInfo(byteFile,BMPMyImageInfo.imageWidth,10));
+    pixelsHeight = parseInt(getByteInfo(byteFile,BMPMyImageInfo.imageHeight,10));
+  }
+    var pixelArray = new Uint8ClampedArray(pixelsWidth*pixelsHeight*3);
+    var iterator = 0;
+    var stroka = pixelsHeight-1;
+    for(var i=0;i<pixelArray.length;i+=3){
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+headerSize];
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+headerSize+1];
+      pixelArray[stroka*pixelsWidth*3+iterator++]=byteFile[i+headerSize+2];
+      if(iterator==pixelsWidth*3){iterator=0;stroka--;}
+    }
+    resolve({pixelArray,pixelsWidth,pixelsHeight});
+  });
+});
+}
+
+//Структура хранящая пояснение к байтовым последовательностям файла
+let BMPImageInfo = {
+  //BITMAPFILEHEADER
+  endianType: ["Порядок байтов",1,2],
+  fileSize: ["Размер файла",3,6],
+  reservedBytes: ["Зарезервированные байты",7,10],
+  pixelDataPos: ["Положение пиксельных данных",11,14],
+  //BITMAPINFO
+  bitmapinfoSize: ["Размер BITMAPINFO",15,18],
+  rasterWidth: ["Ширина растра",19,22],
+  rasterHeight: ["Высота растра и порядок строк",23,26],
+  justOne: ["Тут 1",27,28],
+  pixelSize: ["Кол-во бит на пиксель",29,30],
+  pixelStoreMethod: ["Способ хранения пикселей",31,34],
+  pixelDataSize: ["Размер пиксельных данных",35,38],
+  pixelMeterHorizontal: ["Кол-во пикселей на метр по горизонтали",39,42],
+  pixelMeterVertical: ["Кол-во пикселей на метр по вертикали",43,46],
+  colorTableSize: ["Размер таблицы цветов в ячейках",47,50],
+  colorTableCellNum: ["Кол-во используемых ячеек таблицы",51,54]
+}
+
+//Структура хранящая пояснение к байтовым последовательностям файла
+let BMPMyImageInfo = {
+  idType: ["Идентификатор типа файла",1,2],
+  imageWidth: ["Ширина изображения в пикселях",3,6],
+  imageHeight: ["Высота изображения в пикселях",7,10],
+  pixelSize: ["Глубина цвета (количество бит на один пиксель)",11,11],
+  headerSize: ["Размер заголовка в байтах",12,13],
+  fileSize: ["Размер файла в байтах",14,17],
+  colorNum: ["Количество различных цветов на изображении",18,21]
+}
+
+//Функция для получения представления нескольких байтов из файла
+function getByteInfo(array, BMPInfo, intSystem){
+  var output = "";
+  for(var i = BMPInfo[2]-1; i>BMPInfo[1]-2;i--) output += array[i].toString(2).padStart(8, '0');
+  output = parseInt(output,2).toString(intSystem);
+  return output;
+}
+
+
+//Заполнить canvas пикселями
+function fillCanvas(pixelArray,pixelsWidth,pixelsHeight,canvasId) {
+  var canvas = document.getElementById(canvasId);
+  var tmpPixelArray = new Uint8ClampedArray(pixelsWidth*pixelsHeight*4);
+  var iterator = 0;
+  for(var i=0;i<pixelArray.length;i+=3){
+    tmpPixelArray[iterator++]=pixelArray[i+2];
+    tmpPixelArray[iterator++]=pixelArray[i+1];
+    tmpPixelArray[iterator++]=pixelArray[i];
+    tmpPixelArray[iterator++]=255;
+  }
+  var imageData = new ImageData(tmpPixelArray,pixelsWidth,pixelsHeight);
+  canvas.height = pixelsHeight.toString();
+  canvas.width = pixelsWidth.toString();
+  var ctx = canvas.getContext("2d");
+  ctx.putImageData(imageData,0,0);
+}
+
+let but1 = document.querySelector("#button1");
+but1.onclick = loadImage;
+
+let but2 = document.querySelector("#button2");
+but2.onclick = showNoisyImage;
+
+let but3 = document.querySelector("#button3");
+but3.onclick = showFilteredImage;
+
+let but4 = document.querySelector("#button4");
+but4.onclick = saveCanvasImageSpecial;
+
+let but5 = document.querySelector("#button5");
+but5.onclick = saveCanvasImageNormal;
+        </script>
+    </body>
+</html>
