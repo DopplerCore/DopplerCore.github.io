@@ -1,5 +1,6 @@
 @import url("fontawesome-all.min.css");
-@import url("https://fonts.googleapis.com/css?family=Lato:300,400,900");
+@import url("https://fonts.googleapis.com/css?family=Lato:400,400,900");
+
 
 /*
 	Twenty by HTML5 UP
@@ -31,6 +32,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
 	line-height: 1;
+	font-family: "Times New Roman", sans-serif;
 }
 
 ol, ul {
@@ -3353,3 +3355,4 @@ input, select, textarea {
 			}
 
 	}
+	
