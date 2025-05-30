@@ -2254,11 +2254,11 @@ input, select, textarea {
                 .wrapper.style3 {
                     background: #fff;
                     color: inherit;
+					font-size:28px;
                 }
                 
                 .wrapper.style3 p {
                     margin-bottom: 10px;
-					font-size:28px;
                 }
                 
                 .wrapper.style3 ol {
