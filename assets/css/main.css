@@ -2324,10 +2324,8 @@ input, select, textarea {
 		font-size: 0.8em;
 		left: 0;
 		padding: 1em 1.5em;
-		position: fixed;
 		top: 0;
 		width: 100%;
-		height: 65px;
 		z-index: 10000;
 	}
 
@@ -2350,6 +2348,7 @@ input, select, textarea {
 			#header nav ul {
 				list-style: none;
 				padding-left: 0;
+				margin: 0;
 			}
 
 				#header nav ul li {
@@ -2429,9 +2428,7 @@ input, select, textarea {
 			animation: none;
 			background: transparent;
 			box-shadow: none;
-			color: #fff;
 			padding: 2em 2.5em;
-			position: absolute;
 		}
 
 			#header.alt nav {
@@ -2613,7 +2610,6 @@ input, select, textarea {
 		background-position: top left, top right, bottom left, bottom right;
 		background-repeat: no-repeat;
 		background-size: 25em;
-		padding: 2em 0;
 	}
 
 		#main > :last-child {
@@ -2631,10 +2627,6 @@ input, select, textarea {
 				padding-top: 0;
 				margin-top: 0;
 			}
-
-	body.index #main {
-		padding-top: 3em;
-	}
 
 /* CTA */
 
