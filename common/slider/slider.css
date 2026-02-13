@@ -1,0 +1,33 @@
+.slider-section {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide a {
+  display: block;
+  margin-top: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.swiper-slide img {
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.swiper-slide a:hover img {
+  transform: scale(1.05);
+}
+.swiper-wrapper {
+  align-items: center;
+}

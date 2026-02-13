@@ -1,0 +1,119 @@
+#menu {
+  flex:1;
+}
+.menu-bar {
+  background-color: #0066cc;
+  padding: 10px 0;
+}
+
+.menu-bar > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.menu-bar li {
+  position: relative; /* создаёт контекст для абсолютного позиционирования */
+}
+
+.menu-bar li > a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+  display: block;
+  white-space: nowrap;
+}
+
+.menu-bar li:hover > a {
+  background-color: #004080;
+  border-radius: 4px;
+}
+
+/* Подменю — вне flex-контекста */
+.menu-bar li > .submenu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background-color: #0066cc;
+  min-width: 160px;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  list-style: none;
+  padding: 0;
+}
+
+.menu-bar li:hover > .submenu {
+  display: flex;
+}
+
+.submenu li a {
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.submenu li a:hover {
+  background-color: #004080;
+}
+
+
+#menu-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Кнопка будет справа */
+}
+
+
+
+/* Стили кнопки-гамбургера */
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 10px;
+  z-index: 20;
+}
+
+.menu-toggle span {
+  width: 30px;
+  height: 3px;
+  background-color: #0066cc; /* Цвет полосок */
+  border-radius: 10px;
+  transition: all 0.3s linear;
+}
+
+/* Логика скрытия меню */
+.menu-bar {
+  width: 100%;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  overflow: hidden;
+  max-height: 1000px; /* Большое значение для развернутого вида */
+  opacity: 1;
+}
+
+/* Класс, который будет добавляться скриптом */
+.menu-bar.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+}
+
+/* Корректировка вашего существующего стиля (убираем принудительный flex-direction: column если нужно) */
+.menu-bar > ul {
+  display: flex;
+  flex-direction: column; 
+}

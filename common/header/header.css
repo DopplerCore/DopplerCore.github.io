@@ -1,0 +1,90 @@
+
+
+/* блок ввода */
+.gsc-control-cse .gcse-searchbox-only {
+  width: 100% !important;
+  display: flex;
+}
+
+/* само текстовое поле */
+.gsc-input {
+  flex: 1;
+  font-size: 16px !important;
+  box-sizing: border-box;
+  height: 3em;
+  background: none !important;
+}
+
+/* Скрываем последнюю строку в контейнере подсказок */
+table.gsc-completion-container > tbody > tr:last-of-type {
+    display: none !important;
+}
+
+table.gsc-search-box td.gsc-input {
+  padding-right: 0px !important;
+}
+
+/* кнопка поиска */
+.gsc-search-button input {
+  margin-left: 8px !important;
+  font-size: 16px !important;
+}
+
+.gsc-search-button-v2 {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+/* позиционируем контейнер как основу для абсолютных блоков внутри */
+#search-container {
+  min-width: 480px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.search-section {
+  width: 100%;
+}
+
+/* выделяем блок результатов */
+.gsc-control-cse .gsc-resultsRoot {
+  position: absolute;       /* выводим поверх всего и вне потока */
+  width: calc(100% + 2.2em) !important;
+  margin-left: -1.1em;
+  top: 100%;                /* сразу под областью поиска */
+  left: 0;                  /* по левому краю родителя */
+  box-sizing: border-box;
+  margin-top: 8px;          /* небольшой зазор между полем и результатами */
+  background: #fff;         /* фон под результатами */
+  z-index: 1000;            /* поверх остальных элементов страницы */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gsc-control-cse.gsc-control-cse-ru {
+  padding: 0em;
+  background-color: transparent;
+  border: none;
+}
+
+/* на мобилках и планшетах оставляем те же правила, просто меняем отступы и размеры */
+@media (max-width: 768px) {
+  #search-container {
+    max-width: 100%;
+    margin-top: 15px;
+  }
+  .gsc-control-cse .gsc-resultsRoot {
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gsc-input,
+  .gsc-search-button input {
+    font-size: 14px !important;
+  }
+}
+
+.gsc-search-button button {
+  padding: 17.5px 27px;
+}

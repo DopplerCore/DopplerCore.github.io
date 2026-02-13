@@ -1,0 +1,98 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.container2 {
+  width: 85%;
+  min-width: 1000px;
+  margin:15px;
+  height: auto;
+
+}
+
+/* Центрируем и ограничиваем ширину */
+.container1 {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* Отступ сверху/снизу страницы */
+.page-content {
+  background: #ffffff;
+  flex: 1; /* занимает всё доступное пространство между шапкой и футером */
+  display: flex;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9f9f9;
+}
+
+.header {
+  background: #004080;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+/* 1. Шапка как flex-контейнер */
+.header {
+  display: flex;
+  justify-content: space-between; /* заголовок слева, поиск — справа */
+  align-items: center;
+  flex-wrap: wrap;               /* чтобы на узких экранах переворачивалось */
+  padding: 20px;
+  position: relative;
+  overflow: visible;
+}
+
+/* 3. Адаптив для планшетов и смартфонов */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: relative;
+  bottom: 0;
+}
+
+
+#contacts {
+  background-color: #004080;
+  color:#ffffff;
+}
+
+#contacts a{
+  color:#ffffff;
+}
+
+.news-list {
+  gap: 20px;
+}
+
+.news-item {
+  gap: 20px;
+  display: flex;
+  flex:1;
+}

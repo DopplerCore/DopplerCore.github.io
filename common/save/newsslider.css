@@ -1,0 +1,38 @@
+.newsslider-section {
+  padding: 20px;
+  margin: auto;
+  height: 20vh;
+}
+
+.swiper-slide {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.swiper-slide a {
+  display: block;
+  margin-top: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.swiper-slide img {
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.swiper-slide a:hover img {
+  transform: scale(1.05);
+}
+.swiper-wrapper {
+  align-items: center;
+}
+
+.newsswiper {
+  height: 100%;
+}
