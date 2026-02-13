@@ -1,6 +1,16 @@
 html, body {
   height: 100%;
   margin: 0;
+   /* Путь к картинке (лучше использовать маленькую бесшовную текстуру) */
+    background-image: url('pattern.jpg'); 
+    
+    /* Заставляет картинку повторяться и по горизонтали, и по вертикали */
+    background-repeat: repeat; 
+    
+    /* Фиксирует фон, чтобы он не уезжал при скролле (по желанию) */
+    background-attachment: fixed;
+    background-size: 500px;
+    
 }
 
 .wrapper {
@@ -15,7 +25,6 @@ html, body {
   min-width: 1000px;
   margin:15px;
   height: auto;
-
 }
 
 /* Центрируем и ограничиваем ширину */
@@ -27,11 +36,11 @@ html, body {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  background: #ffffff;
 }
 
 /* Отступ сверху/снизу страницы */
 .page-content {
-  background: #ffffff;
   flex: 1; /* занимает всё доступное пространство между шапкой и футером */
   display: flex;
 }
@@ -40,7 +49,6 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f9f9f9;
 }
 
 .header {

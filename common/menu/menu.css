@@ -1,9 +1,10 @@
 #menu {
   flex:1;
+  height: 100%;
 }
 .menu-bar {
   background-color: #0066cc;
-  padding: 10px 0;
+  height: 100%;
 }
 
 .menu-bar > ul {
@@ -67,8 +68,9 @@
 #menu-wrapper {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-end; /* Кнопка будет справа */
+  height: 100%;
 }
 
 
